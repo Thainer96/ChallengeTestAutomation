@@ -5,9 +5,12 @@ import org.openqa.selenium.By;
 
 public class HomePage {
 
-    public static final Target SEARCH_INPUT = Target.the("search input field")
+    public static final Target SEARCH_INPUT = Target.the("campo de busqueda")
             .located(By.name("search"));
 
-    public static final Target SEARCH_BUTTON = Target.the("search button")
+    public static final Target SEARCH_BUTTON = Target.the("boton de busqueda")
             .located(By.cssSelector("button.btn.btn-default.btn-lg"));
+
+    public static final Target SUCCESS_ALERT = Target.the("alerta de producto agregado")
+            .located(By.cssSelector(".alert-success"));
 }

@@ -5,8 +5,9 @@ import io.cucumber.java.es.Cuando;
 import io.cucumber.java.es.Dado;
 import io.cucumber.java.es.Entonces;
 import io.cucumber.java.es.Y;
-import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
+import net.serenitybdd.model.environment.EnvironmentSpecificConfiguration;
+import net.thucydides.model.util.EnvironmentVariables;
 import opencart.questions.TheCartItemCount;
 import opencart.questions.TheOrderConfirmationMessage;
 import opencart.tasks.AddProductToCart;
@@ -16,7 +17,6 @@ import opencart.tasks.OpenTheStore;
 import opencart.tasks.ProceedToGuestCheckout;
 import opencart.tasks.ViewTheCart;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,31 +27,29 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class PurchaseStepDefinitions {
 
-    @Dado("que el usuario se encuentra en la pagina principal de la tienda")
-    public void userIsOnTheStoreFrontPage() {
-        Actor user = OnStage.theActorCalled("User");
-        user.attemptsTo(
-                OpenTheStore.atUrl("http://opencart.abstracta.us/")
+    private EnvironmentVariables environmentVariables;
+
+    @Dado("que {string} se encuentra en la pagina principal de la tienda")
+    public void actorIsOnTheStoreFrontPage(String actorName) {
+        String baseUrl = EnvironmentSpecificConfiguration.from(environmentVariables)
+                .getProperty("base.url");
+        OnStage.theActorCalled(actorName).attemptsTo(
+                OpenTheStore.atUrl(baseUrl)
         );
     }
 
-    @Cuando("el usuario agrega los siguientes productos al carrito")
-    public void userAddsTheFollowingProductsToTheCart(DataTable dataTable) {
-        List<String> products = dataTable.asList().subList(1, dataTable.asList().size());
+    @Cuando("agrega los siguientes productos al carrito")
+    public void addsTheFollowingProductsToTheCart(DataTable dataTable) {
+        List<String> products = dataTable.asList();
         for (String product : products) {
             theActorInTheSpotlight().attemptsTo(
                     AddProductToCart.withName(product.trim())
             );
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
     }
 
-    @Y("el usuario visualiza el carrito de compras")
-    public void userViewsTheShoppingCart() {
+    @Y("visualiza el carrito de compras")
+    public void viewsTheShoppingCart() {
         theActorInTheSpotlight().attemptsTo(
                 ViewTheCart.items()
         );
@@ -64,34 +62,30 @@ public class PurchaseStepDefinitions {
         );
     }
 
-    @Cuando("el usuario procede al checkout como invitado")
-    public void userProceedsToGuestCheckout() {
+    @Cuando("procede al checkout como invitado")
+    public void proceedsToGuestCheckout() {
         theActorInTheSpotlight().attemptsTo(
                 ProceedToGuestCheckout.fromCart()
         );
     }
 
-    @Y("el usuario completa los datos de facturacion")
-    public void userFillsInBillingDetails(DataTable dataTable) {
-        Map<String, String> details = new HashMap<>();
-        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
-        for (Map<String, String> row : rows) {
-            details.put(row.get("campo"), row.get("valor"));
-        }
+    @Y("completa los datos de facturacion")
+    public void fillsInBillingDetails(DataTable dataTable) {
+        Map<String, String> details = dataTable.asMap(String.class, String.class);
         theActorInTheSpotlight().attemptsTo(
                 FillBillingDetails.withData(details)
         );
     }
 
-    @Y("el usuario confirma la orden de compra")
-    public void userConfirmsTheOrder() {
+    @Y("confirma la orden de compra")
+    public void confirmsTheOrder() {
         theActorInTheSpotlight().attemptsTo(
                 ConfirmTheOrder.purchase()
         );
     }
 
-    @Entonces("el usuario debe ver el mensaje de confirmacion {string}")
-    public void userShouldSeeTheConfirmationMessage(String expectedMessage) {
+    @Entonces("debe ver el mensaje de confirmacion {string}")
+    public void shouldSeeTheConfirmationMessage(String expectedMessage) {
         theActorInTheSpotlight().should(
                 seeThat(TheOrderConfirmationMessage.displayed(), containsString(expectedMessage))
         );

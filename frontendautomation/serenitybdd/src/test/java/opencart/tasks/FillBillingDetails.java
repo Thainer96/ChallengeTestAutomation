@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isEnabled;
 
 public class FillBillingDetails implements Task {
 
@@ -58,11 +59,9 @@ public class FillBillingDetails implements Task {
         );
 
         log.debug("Waiting for zone dropdown to load after country selection");
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        actor.attemptsTo(
+                WaitUntil.the(CheckoutPage.ZONE, isEnabled()).forNoMoreThan(5).seconds()
+        );
 
         log.debug("Selecting zone: {}", details.get("zone"));
         actor.attemptsTo(

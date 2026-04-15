@@ -7,16 +7,14 @@ Característica: Flujo de compra completo como invitado
   Para verificar que el flujo E2E de compra funciona correctamente
 
   Escenario: Compra exitosa de dos productos como invitado
-    Dado que el usuario se encuentra en la pagina principal de la tienda
-    Cuando el usuario agrega los siguientes productos al carrito
-      | producto       |
+    Dado que "Guest Checkout" se encuentra en la pagina principal de la tienda
+    Cuando agrega los siguientes productos al carrito
       | MacBook        |
       | iPhone         |
-    Y el usuario visualiza el carrito de compras
+    Y visualiza el carrito de compras
     Entonces el carrito debe contener 2 productos
-    Cuando el usuario procede al checkout como invitado
-    Y el usuario completa los datos de facturacion
-      | campo     | valor              |
+    Cuando procede al checkout como invitado
+    Y completa los datos de facturacion
       | firstName | Juan               |
       | lastName  | Perez              |
       | email     | juan@test.com      |
@@ -26,5 +24,31 @@ Característica: Flujo de compra completo como invitado
       | postCode  | 110111             |
       | country   | Colombia           |
       | zone      | Bogota D.C.        |
-    Y el usuario confirma la orden de compra
-    Entonces el usuario debe ver el mensaje de confirmacion "Your order has been placed!"
+    Y confirma la orden de compra
+    Entonces debe ver el mensaje de confirmacion "Your order has been placed!"
+
+  Esquema del escenario: Compra exitosa con diferentes datos de facturacion
+    Dado que "Guest Checkout" se encuentra en la pagina principal de la tienda
+    Cuando agrega los siguientes productos al carrito
+      | MacBook        |
+      | iPhone         |
+    Y visualiza el carrito de compras
+    Entonces el carrito debe contener 2 productos
+    Cuando procede al checkout como invitado
+    Y completa los datos de facturacion
+      | firstName | <nombre>           |
+      | lastName  | <apellido>         |
+      | email     | <correo>           |
+      | telephone | <telefono>         |
+      | address1  | <direccion>        |
+      | city      | <ciudad>           |
+      | postCode  | <codigoPostal>     |
+      | country   | <pais>             |
+      | zone      | <departamento>     |
+    Y confirma la orden de compra
+    Entonces debe ver el mensaje de confirmacion "Your order has been placed!"
+
+    Ejemplos:
+      | nombre  | apellido | correo              | telefono   | direccion     | ciudad    | codigoPostal | pais     | departamento    |
+      | Carlos  | Lopez    | carlos@test.com     | 3109876543 | Carrera 45    | Medellin  | 050001       | Colombia | Antioquia       |
+      | Maria   | Garcia   | maria@test.com      | 3201234567 | Avenida 68    | Cali      | 760001       | Colombia | Valle del Cauca |

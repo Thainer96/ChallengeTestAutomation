@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isNotVisible;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class AddProductToCart implements Task {
@@ -37,12 +38,18 @@ public class AddProductToCart implements Task {
                 Click.on(HomePage.SEARCH_BUTTON)
         );
 
-        log.debug("Waiting for add-to-cart button to appear for: {}", productName);
+        log.debug("Waiting for add-to-cart button for: {}", productName);
         actor.attemptsTo(
                 WaitUntil.the(SearchResultPage.addToCartButtonFor(productName), isVisible())
-                        .forNoMoreThan(10).seconds(),
+                        .forNoMoreThan(8).seconds(),
                 Click.on(SearchResultPage.addToCartButtonFor(productName))
         );
-        log.info("Product '{}' added to cart", productName);
+
+        log.debug("Waiting for success alert to appear and dismiss");
+        actor.attemptsTo(
+                WaitUntil.the(HomePage.SUCCESS_ALERT, isVisible()).forNoMoreThan(5).seconds(),
+                WaitUntil.the(HomePage.SUCCESS_ALERT, isNotVisible()).forNoMoreThan(7).seconds()
+        );
+        log.info("Product '{}' added to cart successfully", productName);
     }
 }
