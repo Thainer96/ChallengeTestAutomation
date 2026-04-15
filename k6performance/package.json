@@ -1,0 +1,15 @@
+{
+  "name": "k6performance",
+  "version": "1.0.0",
+  "description": "K6 Performance Tests",
+  "scripts": {
+    "smoke": "k6 run src/test/k6/smoke-test.js",
+    "load": "k6 run src/test/k6/load-test.js",
+    "stress": "k6 run src/test/k6/stress-test.js",
+    "smoke:json": "k6 run --out json=results/smoke-results.json src/test/k6/smoke-test.js",
+    "load:json": "k6 run --out json=results/load-results.json src/test/k6/load-test.js"
+  },
+  "devDependencies": {
+    "@types/k6": "0.52.0"
+  }
+}

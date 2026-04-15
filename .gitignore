@@ -1,0 +1,36 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Serenity Reports
+**/site/serenity/
+
+# Node
+node_modules/
+package-lock.json
+
+# K6 results
+k6performance/results/
+
+# Logs
+*.log
+
+# Build
+build/
+out/
