@@ -30,7 +30,7 @@ Característica: Flujo de compra completo como invitado
   Esquema del escenario: Compra exitosa con diferentes datos de facturacion
     Dado que "Guest Checkout" se encuentra en la pagina principal de la tienda
     Cuando agrega los siguientes productos al carrito
-      | MacBook Air        |
+      | MacBook Air afasdasd        |
       | HTC Touch HD       |
     Y visualiza el carrito de compras
     Entonces el carrito debe contener 2 productos
