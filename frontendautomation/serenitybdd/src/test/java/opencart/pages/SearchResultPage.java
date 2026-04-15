@@ -1,15 +1,14 @@
 package opencart.pages;
 
-import net.serenitybdd.core.pages.PageObject;
-import org.openqa.selenium.By;
+import net.serenitybdd.screenplay.targets.Target;
 
-public class SearchResultPage extends PageObject {
+public class SearchResultPage {
 
-    private static final String ADD_TO_CART_XPATH = "//div[@class='product-thumb']//a[contains(text(),'%s')]/../../following-sibling::div//button[1]";
+    private static final String ADD_TO_CART_XPATH =
+            "//div[@class='product-thumb']//a[contains(text(),'{0}')]/../../following-sibling::div//button[1]";
 
-    public void agregarProductoAlCarrito(String nombreProducto) {
-        By addToCartButton = By.xpath(String.format(ADD_TO_CART_XPATH, nombreProducto));
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(addToCartButton);
-        $(addToCartButton).click();
+    public static Target addToCartButtonFor(String productName) {
+        return Target.the("add to cart button for " + productName)
+                .locatedBy(ADD_TO_CART_XPATH.replace("{0}", productName));
     }
 }

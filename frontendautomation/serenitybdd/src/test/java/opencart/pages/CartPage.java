@@ -1,35 +1,19 @@
 package opencart.pages;
 
-import net.serenitybdd.core.pages.PageObject;
-import net.serenitybdd.core.pages.WebElementFacade;
+import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-import java.util.List;
+public class CartPage {
 
-public class CartPage extends PageObject {
+    public static final Target CART_BUTTON = Target.the("cart button")
+            .located(By.id("cart-total"));
 
-    private static final By CART_BUTTON = By.id("cart-total");
-    private static final By VIEW_CART_LINK = By.cssSelector("a > strong:nth-child(1)");
-    private static final By CART_TABLE_ROWS = By.cssSelector("#content form table tbody tr");
-    private static final By CHECKOUT_BUTTON = By.cssSelector("a.btn.btn-primary[href*='checkout']");
+    public static final Target VIEW_CART_LINK = Target.the("view cart link")
+            .locatedBy("//a[contains(@href,'checkout/cart')]//strong");
 
-    public void abrirCarrito() {
-        $(CART_BUTTON).click();
-    }
+    public static final Target CART_TABLE_ROWS = Target.the("cart product rows")
+            .located(By.cssSelector("#content form table tbody tr"));
 
-    public void irAlCarrito() {
-        $(CART_BUTTON).click();
-        withTimeoutOf(java.time.Duration.ofSeconds(5)).waitFor(VIEW_CART_LINK);
-        $(VIEW_CART_LINK).click();
-    }
-
-    public int obtenerCantidadProductos() {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(CART_TABLE_ROWS);
-        List<WebElementFacade> filas = findAll(CART_TABLE_ROWS);
-        return filas.size();
-    }
-
-    public void irAlCheckout() {
-        $(CHECKOUT_BUTTON).click();
-    }
+    public static final Target CHECKOUT_BUTTON = Target.the("checkout button")
+            .located(By.cssSelector("a.btn.btn-primary[href*='checkout/checkout']"));
 }

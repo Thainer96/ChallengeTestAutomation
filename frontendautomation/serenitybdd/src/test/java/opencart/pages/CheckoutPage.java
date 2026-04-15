@@ -1,98 +1,58 @@
 package opencart.pages;
 
-import net.serenitybdd.core.pages.PageObject;
+import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.Select;
 
-import java.util.Map;
+public class CheckoutPage {
 
-public class CheckoutPage extends PageObject {
+    public static final Target GUEST_RADIO = Target.the("guest checkout option")
+            .located(By.cssSelector("input[value='guest']"));
 
-    private static final By GUEST_RADIO = By.cssSelector("input[value='guest']");
-    private static final By CONTINUE_ACCOUNT = By.id("button-account");
+    public static final Target CONTINUE_ACCOUNT = Target.the("continue account button")
+            .located(By.id("button-account"));
 
-    private static final By FIRST_NAME = By.id("input-payment-firstname");
-    private static final By LAST_NAME = By.id("input-payment-lastname");
-    private static final By EMAIL = By.id("input-payment-email");
-    private static final By TELEPHONE = By.id("input-payment-telephone");
-    private static final By ADDRESS_1 = By.id("input-payment-address-1");
-    private static final By CITY = By.id("input-payment-city");
-    private static final By POST_CODE = By.id("input-payment-postcode");
-    private static final By COUNTRY = By.id("input-payment-country");
-    private static final By ZONE = By.id("input-payment-zone");
-    private static final By CONTINUE_BILLING = By.id("button-guest");
+    public static final Target FIRST_NAME = Target.the("first name field")
+            .located(By.id("input-payment-firstname"));
 
-    private static final By CONTINUE_SHIPPING = By.id("button-shipping-method");
-    private static final By TERMS_CHECKBOX = By.name("agree");
-    private static final By CONTINUE_PAYMENT = By.id("button-payment-method");
-    private static final By CONFIRM_ORDER = By.id("button-confirm");
+    public static final Target LAST_NAME = Target.the("last name field")
+            .located(By.id("input-payment-lastname"));
 
-    private static final By ORDER_SUCCESS_HEADING = By.cssSelector("#content h1");
+    public static final Target EMAIL = Target.the("email field")
+            .located(By.id("input-payment-email"));
 
-    public void seleccionarGuestCheckout() {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(GUEST_RADIO);
-        $(GUEST_RADIO).click();
-        $(CONTINUE_ACCOUNT).click();
-    }
+    public static final Target TELEPHONE = Target.the("telephone field")
+            .located(By.id("input-payment-telephone"));
 
-    public void completarDatosFacturacion(Map<String, String> datos) {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(FIRST_NAME);
+    public static final Target ADDRESS_1 = Target.the("address field")
+            .located(By.id("input-payment-address-1"));
 
-        $(FIRST_NAME).clear();
-        $(FIRST_NAME).type(datos.get("firstName"));
+    public static final Target CITY = Target.the("city field")
+            .located(By.id("input-payment-city"));
 
-        $(LAST_NAME).clear();
-        $(LAST_NAME).type(datos.get("lastName"));
+    public static final Target POST_CODE = Target.the("post code field")
+            .located(By.id("input-payment-postcode"));
 
-        $(EMAIL).clear();
-        $(EMAIL).type(datos.get("email"));
+    public static final Target COUNTRY = Target.the("country selector")
+            .located(By.id("input-payment-country"));
 
-        $(TELEPHONE).clear();
-        $(TELEPHONE).type(datos.get("telephone"));
+    public static final Target ZONE = Target.the("zone selector")
+            .located(By.id("input-payment-zone"));
 
-        $(ADDRESS_1).clear();
-        $(ADDRESS_1).type(datos.get("address1"));
+    public static final Target CONTINUE_BILLING = Target.the("continue billing button")
+            .located(By.id("button-guest"));
 
-        $(CITY).clear();
-        $(CITY).type(datos.get("city"));
+    public static final Target CONTINUE_SHIPPING = Target.the("continue shipping button")
+            .located(By.id("button-shipping-method"));
 
-        $(POST_CODE).clear();
-        $(POST_CODE).type(datos.get("postCode"));
+    public static final Target TERMS_CHECKBOX = Target.the("terms and conditions checkbox")
+            .located(By.name("agree"));
 
-        seleccionarPais(datos.get("country"));
-        esperarYSeleccionarZona(datos.get("zone"));
+    public static final Target CONTINUE_PAYMENT = Target.the("continue payment button")
+            .located(By.id("button-payment-method"));
 
-        $(CONTINUE_BILLING).click();
-    }
+    public static final Target CONFIRM_ORDER = Target.the("confirm order button")
+            .located(By.id("button-confirm"));
 
-    private void seleccionarPais(String pais) {
-        new Select(getDriver().findElement(COUNTRY)).selectByVisibleText(pais);
-    }
-
-    private void esperarYSeleccionarZona(String zona) {
-        withTimeoutOf(java.time.Duration.ofSeconds(5)).waitFor(ZONE);
-        waitABit(1000);
-        new Select(getDriver().findElement(ZONE)).selectByVisibleText(zona);
-    }
-
-    public void continuarMetodoEnvio() {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(CONTINUE_SHIPPING);
-        $(CONTINUE_SHIPPING).click();
-    }
-
-    public void aceptarTerminosYContinuarPago() {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(TERMS_CHECKBOX);
-        $(TERMS_CHECKBOX).click();
-        $(CONTINUE_PAYMENT).click();
-    }
-
-    public void confirmarOrden() {
-        withTimeoutOf(java.time.Duration.ofSeconds(10)).waitFor(CONFIRM_ORDER);
-        $(CONFIRM_ORDER).click();
-    }
-
-    public String obtenerMensajeConfirmacion() {
-        withTimeoutOf(java.time.Duration.ofSeconds(15)).waitFor(ORDER_SUCCESS_HEADING);
-        return $(ORDER_SUCCESS_HEADING).getText();
-    }
+    public static final Target ORDER_SUCCESS_HEADING = Target.the("order confirmation heading")
+            .located(By.cssSelector("#content h1"));
 }
