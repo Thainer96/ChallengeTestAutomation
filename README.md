@@ -75,10 +75,70 @@ karateapi/target/karate-reports/karate-timeline.html     # Timeline de ejecucion
 ### Frontend Automation
 
 #### Serenity BDD
-UI testing con [Serenity BDD](https://serenity-bdd.info/) + Cucumber + WebDriver.
+UI testing con [Serenity BDD](https://serenity-bdd.info/) + Cucumber + Screenplay Pattern contra [OpenCart](http://opencart.abstracta.us/).
+
+Patron Screenplay: Actor → Task → Question → Page (Targets)
+
+```
+frontendautomation/serenitybdd/src/test/
+├── java/opencart/
+│   ├── pages/                     # Targets (localizadores de UI)
+│   │   ├── HomePage.java
+│   │   ├── SearchResultPage.java
+│   │   ├── CartPage.java
+│   │   └── CheckoutPage.java
+│   ├── tasks/                     # Acciones del Actor
+│   │   ├── OpenTheStore.java
+│   │   ├── AddProductToCart.java
+│   │   ├── ViewTheCart.java
+│   │   ├── ProceedToGuestCheckout.java
+│   │   ├── FillBillingDetails.java
+│   │   └── ConfirmTheOrder.java
+│   ├── questions/                 # Validaciones
+│   │   ├── TheCartItemCount.java
+│   │   └── TheOrderConfirmationMessage.java
+│   ├── stepdefinitions/           # Glue de Cucumber
+│   │   ├── PurchaseStepDefinitions.java
+│   │   └── Hooks.java
+│   └── runners/
+│       └── TestRunner.java
+└── resources/
+    ├── features/compra/
+    │   └── flujo_compra.feature   # Feature en español
+    ├── serenity.conf              # Config multi-browser
+    ├── logback-test.xml
+    ├── cucumber.properties
+    └── junit-platform.properties
+```
+
+Ejecucion:
 
 ```bash
+# Ejecutar todos los tests + reporte Serenity
 mvn verify -pl frontendautomation/serenitybdd
+
+# Solo ejecutar tests sin reporte
+mvn test -pl frontendautomation/serenitybdd
+
+# Filtrar por tags
+mvn verify -pl frontendautomation/serenitybdd -Dcucumber.filter.tags="@e2e"
+mvn verify -pl frontendautomation/serenitybdd -Dcucumber.filter.tags="@compra"
+
+# Cambiar navegador
+mvn verify -pl frontendautomation/serenitybdd -Dwebdriver.driver=firefox
+mvn verify -pl frontendautomation/serenitybdd -Dwebdriver.driver=edge
+
+# Modo headless
+mvn verify -pl frontendautomation/serenitybdd -Dheadless.mode=true
+
+# Cambiar ambiente
+mvn verify -pl frontendautomation/serenitybdd -Denvironment=qa
+```
+
+Reportes:
+
+```
+frontendautomation/serenitybdd/target/site/serenity/index.html
 ```
 
 #### Playwright
