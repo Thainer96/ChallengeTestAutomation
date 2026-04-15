@@ -168,10 +168,12 @@ k6 run k6performance/src/test/k6/stress-test.js
 - Maven 3.8+
 - K6 (para tests de performance)
 
+> **Windows (PowerShell):** Los parametros Maven con punto deben ir entre comillas: `"-Dwebdriver.driver=firefox"`, `"-Dheadless.mode=true"`
+
 ## Setup Inicial
 
 ```bash
-# Instalar dependencias Maven
+# Limpiar y compilar todo el proyecto
 mvn clean install -DskipTests
 
 # Instalar browsers de Playwright
