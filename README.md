@@ -24,10 +24,52 @@ ChallengeTestAutomation/
 ## Módulos
 
 ### Karate API
-API testing usando [Karate DSL](https://github.com/karatelabs/karate).
+API testing usando [Karate DSL](https://github.com/karatelabs/karate) contra la API de [PetStore](https://petstore.swagger.io/).
+
+```
+karateapi/src/test/
+├── java/runner/
+│   ├── UserRunner.java           # Runner por dominio
+│   └── ParallelRunner.java       # Runner paralelo (5 threads)
+└── resources/
+    ├── karate-config.js
+    └── features/user/
+        ├── data/                  # Payloads JSON externalizados
+        ├── create-user.feature
+        ├── search-user.feature
+        ├── update-user.feature
+        ├── delete-user.feature
+        └── negative-user.feature
+```
+
+Ejecucion:
 
 ```bash
+# Todos los tests
 mvn test -pl karateapi
+
+# Solo el runner de usuario
+mvn test -pl karateapi -Dtest=runner.UserRunner
+
+# Ejecucion paralela (5 threads)
+mvn test -pl karateapi -Dtest=runner.ParallelRunner
+
+# Por tags
+mvn test -pl karateapi -Dkarate.options="--tags @smoke"
+mvn test -pl karateapi -Dkarate.options="--tags @negative"
+mvn test -pl karateapi -Dkarate.options="--tags @create"
+mvn test -pl karateapi -Dkarate.options="--tags @update"
+mvn test -pl karateapi -Dkarate.options="--tags @delete"
+
+# Limpiar y ejecutar
+mvn clean test -pl karateapi
+```
+
+Reportes:
+
+```
+karateapi/target/karate-reports/karate-summary.html     # Reporte general
+karateapi/target/karate-reports/karate-timeline.html     # Timeline de ejecucion paralela
 ```
 
 ### Frontend Automation
