@@ -28,6 +28,16 @@ public class Hooks {
         OnStage.setTheStage(new OnlineCast());
     }
 
+    @Before(order = 1)
+    public void maximizeBrowser() {
+        try {
+            Actor actor = OnStage.theActorInTheSpotlight();
+            BrowseTheWeb.as(actor).getDriver().manage().window().maximize();
+        } catch (Exception e) {
+            log.debug("Browser not yet available for maximize");
+        }
+    }
+
     @After
     public void tearDown(Scenario scenario) {
         try {

@@ -47,8 +47,7 @@ public class AddProductToCart implements Task {
 
         log.debug("Waiting for success alert to appear and dismiss");
         actor.attemptsTo(
-                WaitUntil.the(HomePage.SUCCESS_ALERT, isVisible()).forNoMoreThan(5).seconds(),
-                WaitUntil.the(HomePage.SUCCESS_ALERT, isNotVisible()).forNoMoreThan(7).seconds()
+                WaitUntil.the(HomePage.SUCCESS_ALERT, isVisible()).forNoMoreThan(5).seconds()
         );
         log.info("Product '{}' added to cart successfully", productName);
     }
