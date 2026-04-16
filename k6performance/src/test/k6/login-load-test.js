@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check, group, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { Trend, Rate, Counter } from 'k6/metrics';
@@ -29,47 +29,46 @@ export const options = {
   },
 };
 
+const params = {
+  headers: { 'Content-Type': 'application/json' },
+  timeout: '60s',
+};
+
 export default function () {
   const user = users[__VU % users.length];
 
-  const payload = JSON.stringify({
-    username: user.user,
-    password: user.passwd,
+  group('Login Request', function () {
+    const payload = JSON.stringify({
+      username: user.user,
+      password: user.passwd,
+    });
+
+    const res = http.post('https://fakestoreapi.com/auth/login', payload, params);
+
+    loginDuration.add(res.timings.duration);
+
+    const passed = check(res, {
+      'status is 201': (r) => r.status === 201,
+      'response time < 1500ms': (r) => r.timings.duration < 1500,
+      'response has token': (r) => {
+        try {
+          return JSON.parse(r.body).token !== undefined;
+        } catch (e) {
+          return false;
+        }
+      },
+    });
+
+    loginFailRate.add(!passed);
+    if (passed) loginSuccess.add(1);
   });
-
-  const params = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    timeout: '60s',
-  };
-
-  const res = http.post('https://fakestoreapi.com/auth/login', payload, params);
-
-  loginDuration.add(res.timings.duration);
-
-  const passed = check(res, {
-    'status is 201': (r) => r.status === 201,
-    'response time < 1500ms': (r) => r.timings.duration < 1500,
-    'response has token': (r) => {
-      try {
-        return JSON.parse(r.body).token !== undefined;
-      } catch (e) {
-        return false;
-      }
-    },
-  });
-
-  loginFailRate.add(!passed);
-  if (passed) loginSuccess.add(1);
 
   sleep(0.5);
 }
 
-
 export function handleSummary(data) {
   return {
-    'results/login-load-summary.json': JSON.stringify(data, null, 2),
+    'k6performance/results/login-load-summary.json': JSON.stringify(data, null, 2),
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
   };
 }
