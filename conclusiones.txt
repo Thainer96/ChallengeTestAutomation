@@ -1,0 +1,68 @@
+HALLAZGOS Y CONCLUSIONES
+
+PRUEBA FUNCIONAL E2E - Serenity BDD
+
+Sitio: http://opencart.abstracta.us/
+Se automatizo el flujo completo de compra como invitado usando el patron Screenplay.
+
+Se ejecutaron 3 escenarios: uno con datos fijos y dos con datos parametrizados
+(Scenario Outline) para Medellin y Cali. Los 3 pasaron.
+
+Hallazgos encontrados durante la automatizacion:
+- El sitio tiene el certificado SSL vencido, toco configurar el browser para
+  que lo ignore, si no se queda bloqueado en el checkout.
+- El dropdown de departamento se demora en cargar despues de seleccionar el pais,
+  sin una espera explicita el test falla de forma intermitente.
+- Cuando se agrega un producto al carrito aparece una alerta que tapa el campo
+  de busqueda, hay que esperar a que desaparezca antes de buscar el siguiente.
+
+Reporte: frontendautomation/serenitybdd/target/site/serenity/index.html
+
+
+PRUEBA DE API - Karate
+
+API: https://petstore.swagger.io/v2
+Se automatizo el CRUD completo de usuario: crear, buscar, actualizar, verificar y eliminar.
+
+Hallazgos:
+- El POST /user devuelve 200 en vez de 201, no sigue el estandar REST.
+- Si mandas un body vacio al POST /user lo acepta sin error, deberia devolver 400.
+- El DELETE y PUT de un usuario que no existe a veces devuelve 200 en vez de 404,
+  el comportamiento no es consistente.
+- La validacion de schema confirmo que los tipos de datos del response son correctos.
+
+Reporte: karateapi/target/karate-reports/karate-summary.html
+
+
+PRUEBA DE PERFORMANCE - K6
+
+Servicio: https://fakestoreapi.com/auth/login
+Se ejecuto una prueba de carga con ramp-up hasta 25 VUs durante 4 minutos.
+
+Resultados:
+- Throughput: 23 TPS (el objetivo era >= 20, cumple)
+- Response time p(95): 360ms (el objetivo era < 1500ms, cumple)
+- Promedio de respuesta: 319ms
+
+Hallazgos:
+- El endpoint de login devuelve 201 en vez de 200, no es lo comun para auth.
+- Algunos usuarios del CSV no existen en FakeStoreAPI, eso genera fallos en la
+  validacion del token que no son problemas de performance sino de datos.
+- Se implemento un smoke test que valida que el servicio este arriba antes de
+  lanzar la carga completa.
+
+Reporte: k6performance/results/login-load-summary.json
+
+
+EN GENERAL
+
+El proyecto quedo como multi-modulo Maven con 3 soluciones independientes que se
+pueden ejecutar por separado o todas juntas con los scripts run-tests.bat/.sh.
+
+Lo que rescato:
+- Screenplay en Serenity mantiene el codigo limpio y cada clase tiene una sola
+  responsabilidad.
+- Externalizar los datos en JSON y CSV hace que cambiar datos no requiera tocar codigo.
+- El smoke test antes del load test evita perder tiempo si el servicio esta caido.
+- Los hallazgos de las APIs (status codes incorrectos, validaciones faltantes) son
+  defectos reales que se reportarian en un proyecto productivo.
