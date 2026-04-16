@@ -174,6 +174,9 @@ k6 run k6performance/src/test/k6/login-smoke-test.js
 
 # Load test (ramp-up hasta 25 VUs)
 k6 run k6performance/src/test/k6/login-load-test.js
+
+# Load test con dashboard web en tiempo real (http://localhost:5665)
+$env:K6_WEB_DASHBOARD="true"; k6 run k6performance/src/test/k6/login-load-test.js
 ```
 
 Estrategia recomendada: ejecutar smoke primero, si pasa ejecutar load. Los scripts `run-tests.bat` y `run-tests.sh` ya implementan esta logica automaticamente.
