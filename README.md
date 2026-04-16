@@ -149,17 +149,40 @@ mvn test -pl frontendautomation/playwright
 ```
 
 ### K6 Performance
-Performance testing usando [K6](https://k6.io/).
+Prueba de carga del servicio de login de [FakeStoreAPI](https://fakestoreapi.com/) usando [K6](https://k6.io/).
+
+```
+k6performance/src/test/k6/
+├── data/
+│   └── login-users.csv            # Credenciales parametrizadas
+├── login-smoke-test.js            # Smoke: valida que el servicio este arriba
+└── login-load-test.js             # Load: prueba de carga con thresholds
+```
+
+Thresholds configurados (load test):
+- Response time: p(95) < 1.5 segundos
+- Error rate: < 3%
+- Throughput: >= 20 TPS
+
+Metricas custom: `login_duration` (Trend), `login_fail_rate` (Rate), `login_success_count` (Counter)
+
+Ejecucion:
 
 ```bash
-# Smoke test
-k6 run k6performance/src/test/k6/smoke-test.js
+# Smoke test (1 VU, 1 iteracion - valida que el servicio responda)
+k6 run k6performance/src/test/k6/login-smoke-test.js
 
-# Load test
-k6 run k6performance/src/test/k6/load-test.js
+# Load test (ramp-up hasta 25 VUs)
+k6 run k6performance/src/test/k6/login-load-test.js
+```
 
-# Stress test
-k6 run k6performance/src/test/k6/stress-test.js
+Estrategia recomendada: ejecutar smoke primero, si pasa ejecutar load. Los scripts `run-tests.bat` y `run-tests.sh` ya implementan esta logica automaticamente.
+
+Reportes:
+
+```
+k6performance/results/login-smoke-summary.json   # Resultado del smoke test
+k6performance/results/login-load-summary.json    # Resultado del load test
 ```
 
 ## Requisitos
@@ -178,4 +201,20 @@ mvn clean install -DskipTests
 
 # Instalar browsers de Playwright
 mvn exec:java -pl frontendautomation/playwright -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install"
+```
+
+## Ejecucion completa (Full Suite)
+
+Scripts que ejecutan Karate API + Serenity BDD + K6 Performance en secuencia y muestran un resumen con resultados y rutas a reportes.
+
+```bash
+# Windows (CMD)
+.\run-tests.bat
+
+# Mac / Linux
+chmod +x run-tests.sh
+./run-tests.sh
+
+# O con Maven directo (ambos modulos en un comando)
+mvn clean verify -pl karateapi,frontendautomation/serenitybdd
 ```
