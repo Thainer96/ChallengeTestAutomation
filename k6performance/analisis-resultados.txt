@@ -1,0 +1,69 @@
+ANALISIS DE RESULTADOS - Prueba de carga App Transaction Balance
+
+DATOS GENERALES
+
+Requests totales: 276,650
+Duracion: ~1 hora
+VUs maximos: 140
+Throughput: 73.17 req/s
+Checks exitosos: 97.55%
+Requests fallidos: 2.44%
+
+
+TIEMPOS DE RESPUESTA
+
+Lo primero que salta a la vista es la diferencia entre la mediana (613ms) y el
+promedio (861ms). Eso me dice que la mayoria de requests responden rapido pero
+hay picos que suben el promedio. El maximo de 29.93s lo confirma, hubo momentos
+donde el servidor se saturo.
+
+El p(95) quedo en 1.57s. Si el criterio era p(95) < 1.5s, no pasa por 70ms.
+Es un margen pequeno pero es un incumplimiento.
+
+El cuello de botella esta en el servidor, no en la red. El http_req_connecting
+es practicamente 0, todo el tiempo se va en http_req_waiting (procesamiento).
+
+
+ERRORES
+
+Del total de 6,759 errores:
+- 5,987 son HTTP 5xx (errores del servidor) -> 88.5% de los fallos
+- 769 son HTTP 4xx (posible rate limiting)
+- Los 5xx se concentran en la fase de carga sostenida (stage 1)
+
+Esto me dice que el servidor aguanta la carga inicial pero cuando lleva rato
+con 140 VUs empieza a fallar. No es un problema de la prueba, es del servidor.
+
+
+GRAFICA DE MONITOREO
+
+La grafica muestra 3 caidas fuertes de throughput (01:45, 01:55, 02:05).
+En esos momentos los req/s bajan de 75/s a menos de 25/s. Despues se recupera.
+
+Ese patron de caida-recuperacion periodica me hace pensar en dos cosas:
+- El pool de conexiones se llena y el servidor las libera de golpe
+- O hay un proceso de garbage collection o restart que lo frena temporalmente
+
+Los VUs se mantienen en 140 todo el tiempo, asi que no es que K6 deje de mandar
+requests, es que el servidor deja de responder.
+
+
+CUMPLIMIENTO
+
+Tasa de error < 3%:          2.44%    -> CUMPLE
+Throughput >= 20 TPS:        73 req/s -> CUMPLE
+Response time p(95) < 1.5s:  1.57s    -> NO CUMPLE (por 70ms)
+
+Dos de tres criterios pasan. El que falla es el response time y esta directamente
+relacionado con los picos de saturacion del servidor.
+
+
+QUE RECOMENDARIA
+
+- Revisar los logs del servidor en los horarios de las caidas para ver que esta
+  pasando internamente.
+- Hacer una prueba con 100 VUs para encontrar el punto donde empieza a degradarse.
+- Si el p(95) tiene que estar en 1.5s si o si, hay que optimizar el endpoint o
+  escalar el servidor porque con 140 VUs no lo logra.
+- Los errores 4xx habria que revisarlos, si es rate limiting del servidor es
+  esperado, si no lo es, es un bug.
