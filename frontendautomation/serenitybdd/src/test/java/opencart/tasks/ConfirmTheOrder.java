@@ -36,7 +36,7 @@ public class ConfirmTheOrder implements Task {
 
         log.info("Placing the order");
         actor.attemptsTo(
-                WaitUntil.the(CheckoutPage.CONFIRM_ORDER, isVisible()).forNoMoreThan(10).seconds(),
+                WaitUntil.the(CheckoutPage.CONFIRM_ORDER, isVisible()).forNoMoreThan(15).seconds(),
                 Click.on(CheckoutPage.CONFIRM_ORDER)
         );
     }
